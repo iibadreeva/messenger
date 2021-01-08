@@ -9,3 +9,4 @@ atlassian-ide-plugin.xml
 .eslintcache
 node_modules/
 *.lock
+package-lock.json
