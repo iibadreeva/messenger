@@ -8,9 +8,11 @@ const PORT = 3000;
 const API_PREFIX = '/api/v1';
 
 // app.use(express.static('./'));
-app.use(express.static(`${__dirname}/static`));
-app.use('/css', express.static(`${__dirname}/static/css`))
 
+app.use(express.static(`${__dirname}/static`));
+app.listen(PORT, function() {
+  console.log(`Server access: http://localhost:${PORT}/`);
+});
 /*app.set('view engine', 'njk')
 nunjucks.configure('views', {
   express: app
