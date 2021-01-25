@@ -1,4 +1,5 @@
-import EventBus from './event-bus.js';
+import EventBus from './event-bus';
+import {ObjectKeyStringType} from "./types";
 
 interface IMeta {
   tagName: string,
@@ -8,23 +9,19 @@ interface IMeta {
 
 export default abstract class Block<Props extends Object> {
   public props: Record<string, Props> = {};
-  private eventBus: () => EventBus;
-  static EVENTS = {
-    INIT: "init",
-    FLOW_CDM: "flow:component-did-mount",
-    FLOW_RENDER: "flow:render",
-    FLOW_CDU: "flow:component-did-update"
+  eventBus: () => EventBus;
+
+  lastActiveElement: any;
+  EVENTS: ObjectKeyStringType = {
+    INIT: 'init',
+    FLOW_CDM: 'flow:component-did-mount',
+    FLOW_CDU: 'flow:component-did-update',
+    FLOW_RENDER: 'flow:render',
   };
 
   _element: HTMLElement | null = null;
   _meta: IMeta | null = null;
 
-  /** JSDoc
-   * @param {string} tagName
-   * @param {Object} props
-   *
-   * @returns {void}
-   */
   constructor(tagName: string = "div", className:string = '', props = {}) {
     const eventBus = new EventBus();
     this._meta = {
@@ -43,13 +40,13 @@ export default abstract class Block<Props extends Object> {
     this.eventBus = () => eventBus;
 
     this._registerEvents(eventBus);
-    eventBus.emit(Block.EVENTS.INIT);
+    eventBus.emit(this.EVENTS.INIT);
   }
 
   _registerEvents(eventBus:EventBus) {
-    eventBus.on(Block.EVENTS.INIT, this.init.bind(this));
-    eventBus.on(Block.EVENTS.FLOW_CDM, this._componentDidMount.bind(this));
-    eventBus.on(Block.EVENTS.FLOW_RENDER, this._render.bind(this));//--
+    eventBus.on(this.EVENTS.INIT, this.init.bind(this));
+    eventBus.on(this.EVENTS.FLOW_CDM, this._componentDidMount.bind(this));
+    eventBus.on(this.EVENTS.FLOW_RENDER, this._render.bind(this));//--
   }
 
   _createResources() {
@@ -62,14 +59,13 @@ export default abstract class Block<Props extends Object> {
 
   init(): void {
     this._createResources();
-    const eventBus = this.eventBus();
-    eventBus.emit(Block.EVENTS.FLOW_RENDER);
+    this.eventBus().emit(this.EVENTS.FLOW_CDM);
   }
 
   _componentDidMount(): void {
     this.componentDidMount();
     const eventBus = this.eventBus();
-    eventBus.emit(Block.EVENTS.FLOW_RENDER);
+    eventBus.emit(this.EVENTS.FLOW_RENDER);
   }
 
   // Может переопределять пользователь, необязательно трогать
@@ -86,25 +82,26 @@ export default abstract class Block<Props extends Object> {
     return true;
   }
 
-  setProps = <T extends object>(nextProps: T) => {
+  setProps = <T extends object>(nextProps: T): void => {
     if (!nextProps) {
       return;
     }
 
+    this.lastActiveElement = document.activeElement;
     Object.assign(this.props, nextProps);
 
     const eventBus = this.eventBus();
-    eventBus.emit(Block.EVENTS.FLOW_RENDER);
+    eventBus.emit(this.EVENTS.FLOW_RENDER);
   };
 
-  get element() {
-    return this._element;
+  get element(): HTMLElement {
+    return <HTMLElement>this._element;
   }
 
   _render(): void {
     const block = this.render();
 
-    const element: any = this._element;
+    const element:any = this._element;
     if (element) {
       element.innerHTML = block;
     }
@@ -135,13 +132,8 @@ export default abstract class Block<Props extends Object> {
         target[prop] = val;
         return true;
       },
-      deleteProperty(target:any, prop: string) {
-        if(prop.indexOf('_') === 0) {
-          throw new Error('Нет прав');
-        }
-
-        delete target[prop];
-        return true;
+      deleteProperty() {
+        throw new Error('No access');
       }
     });
 
@@ -154,16 +146,10 @@ export default abstract class Block<Props extends Object> {
   }
 
   show(): void {
-    const el: HTMLElement | null = this.getContent();
-    if(el) {
-      el.style.display = "block";
-    }
+    this.getContent().style.display = "block";
   }
 
   hide(): void {
-    const el: HTMLElement | null = this.getContent();
-    if(el) {
-      el.style.display = "none";
-    }
+    this.getContent().style.display = 'none';
   }
 }
