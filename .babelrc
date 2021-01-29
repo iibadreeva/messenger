@@ -1,0 +1,17 @@
+{
+  "presets": [
+    [
+      "@babel/typescript",
+      {
+        "corejs": 3,
+        "useBuiltIns": "usage",
+        "debug": false,
+        "modules": false
+      }
+    ]
+  ],
+  "plugins": [
+    "syntax-class-properties",
+    "transform-class-properties"
+  ]
+}

@@ -1,6 +1,6 @@
-import HTTP from "../../core/modules/http";
-import {BaseAPI} from "../../core/modules/http/base-api";
-import {host} from "../../core/modules/actions";
+import HTTP from '../../core/modules/http';
+import { BaseAPI } from '../../core/modules/http/base-api';
+import { host } from '../../core/modules/actions';
 
 const cartAPIInstance = new HTTP(host);
 
@@ -9,30 +9,30 @@ export class ChatApi extends BaseAPI {
     return cartAPIInstance.get('/api/v2/chats');
   }
 
-  createChat(data:object) {
+  createChat(data: object) {
     return cartAPIInstance.post('/api/v2/chats', {
       headers: {
-        'content-type': 'application/json'
+        'content-type': 'application/json',
       },
-      data: JSON.stringify(data)
+      data: JSON.stringify(data),
     });
   }
 
-  deleteChat(data:object) {
+  deleteChat(data: object) {
     return cartAPIInstance.delete('/api/v2/chats', {
       headers: {
-        'content-type': 'application/json'
+        'content-type': 'application/json',
       },
-      data: JSON.stringify(data)
+      data: JSON.stringify(data),
     });
   }
 
-  searchUser(data:object) {
+  searchUser(data: object) {
     return cartAPIInstance.post('/api/v2/user/search', {
       headers: {
-        'content-type': 'application/json'
+        'content-type': 'application/json',
       },
-      data: JSON.stringify(data)
+      data: JSON.stringify(data),
     });
   }
 
@@ -40,21 +40,29 @@ export class ChatApi extends BaseAPI {
     return cartAPIInstance.get(`/api/v2/chats/${id}/users`);
   }
 
-  addUserToChat(data:object) {
+  addUserToChat(data: object) {
     return cartAPIInstance.put('/api/v2/chats/users', {
       headers: {
-        'content-type': 'application/json'
+        'content-type': 'application/json',
       },
-      data: JSON.stringify(data)
+      data: JSON.stringify(data),
     });
   }
 
-  deleteUserFromChat(data:object) {
+  deleteUserFromChat(data: object) {
     return cartAPIInstance.delete('/api/v2/chats/users', {
       headers: {
-        'content-type': 'application/json'
+        'content-type': 'application/json',
       },
-      data: JSON.stringify(data)
+      data: JSON.stringify(data),
+    });
+  }
+
+  getToken(id: number) {
+    return cartAPIInstance.post(`/api/v2/chats/token/${id}`, {
+      headers: {
+        'content-type': 'application/json',
+      },
     });
   }
 }

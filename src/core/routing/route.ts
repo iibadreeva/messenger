@@ -1,5 +1,5 @@
-import { isEqual } from '../utils/is_iqual/is_equal'
-import render from "../utils/render";
+import { isEqual } from '../../utils/is_iqual/is_equal';
+import render from '../../utils/render';
 
 type routeProps = { rootQuery: string; protect?: boolean };
 
@@ -16,7 +16,7 @@ interface IRoute {
 class Route implements IRoute {
   _pathname: string;
   _blockClass: any;
-  _block: Function | null;
+  _block: any;
   _props: routeProps;
   constructor(pathname: string, view: Function, props: routeProps) {
     this._pathname = pathname;
@@ -31,7 +31,7 @@ class Route implements IRoute {
 
   render(): void {
     const app = document.querySelector(this._props.rootQuery);
-    if(app) {
+    if (app) {
       app.innerHTML = '';
 
       this._block = new this._blockClass();
